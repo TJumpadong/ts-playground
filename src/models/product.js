@@ -13,11 +13,11 @@ class ProductModel {
     return this.model.find()
   }
 
-  // async create(product) {
-  //   const result = await this.model(product)
-  //   console.log(result)
-  //   return true
-  // }
+  async create(product) {
+    const newProduct = new this.model(product)
+    const createdProduct = await newProduct.save()
+    return createdProduct
+  }
 
   get(id) {
     return this.model.findById(id)
