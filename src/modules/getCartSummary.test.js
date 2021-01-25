@@ -1,4 +1,4 @@
-const getCartItemSummary = require('./getCartItemSummary')
+const getCartItemSummary = require('./getCartSummary').default
 const mockObjectId = (val) => ({
   val,
   equals: term => val === term.val

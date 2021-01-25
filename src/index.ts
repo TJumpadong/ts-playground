@@ -1,18 +1,18 @@
-const express = require('express')
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const mongoose = require('mongoose')
-const ProductService = require('./services/product')
-const CartService = require('./services/cart')
-const OrderService = require('./services/order')
-const ProductModel = require('./models/product')
-const CartModel = require('./models/cart')
-const OrderModel = require('./models/order')
+import express from 'express'
+import cors from 'cors'
+import mongoose from 'mongoose'
+
+import ProductService from './services/product'
+import CartService from './services/cart'
+import OrderService from './services/order'
+import ProductModel from './models/product'
+import CartModel from './models/cart'
+import OrderModel from './models/order'
 
 const app = express()
 const port = 3000
 app.use(cors())
-app.use(bodyParser.json())
+app.use(express.json())
 
 const MOCK_USER_ID = '1'
 
@@ -81,12 +81,16 @@ app.get('/products', async (req, res) => {
   res.json(products)
 })
 
-app.get('/products/:productId', async (req, res) => {
-  // validate productId
-  const { productId } = req.params
-  const product = await productService.get(productId)
-  
-  res.json(product)
+app.get('/products/:productId', async (req, res, next) => {
+  try {
+    // validate productId
+    const { productId } = req.params
+    const product = await productService.get(productId)
+
+    res.json(product)
+  } catch (err) {
+    next(err)
+  }
 })
 
 app.get('/carts', async (req, res) => {
@@ -109,7 +113,7 @@ app.put('/carts', async (req, res) => {
 app.post('/orders', async (req, res) => {
   const userId = getUserIdFromSession()
   const address = req.body.address
-  
+
   const order = await orderService.create(userId, address)
   res.json(order)
 })
@@ -127,6 +131,14 @@ app.get('/orders/:orderId', async (req, res) => {
   const order = await orderService.get(userId, orderId)
 
   res.json(order)
+})
+
+// error handlers
+app.use((err, _req, res, _next) => {
+  res.status(err.status || 500)
+  res.json({
+    message: err.message,
+  })
 })
 
 app.listen(port, () => {
