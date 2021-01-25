@@ -9,6 +9,8 @@ import ProductModel from './models/product'
 import CartModel from './models/cart'
 import OrderModel from './models/order'
 
+import config from './config'
+
 const app = express()
 const port = 3000
 app.use(cors())
@@ -26,9 +28,9 @@ const MOCK_USER_ID = '1'
 mongoose.connect('mongodb://localhost:27017/e-shopping', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  user: 'root',
-  pass: 'root',
-  authSource: 'admin',
+  user: config.dbUser,
+  pass: config.dbPassword,
+  authSource: config.dbAuthSource,
 })
 mongoose.set('useFindAndModify', false)
 
