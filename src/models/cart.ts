@@ -1,16 +1,5 @@
-import { Document, Model, model, Schema } from 'mongoose'
-
-export interface ICartItem {
-  _id: string,
-  quantity: number,
-}
-
-export interface ICart {
-  userId: string,
-  items: Array<ICartItem>,
-}
-
-export interface ICartDoc extends Document, ICart {}
+import { Model, model, Schema } from 'mongoose'
+import { ICart, ICartDoc } from '../interfaces/cart'
 
 class CartModel {
   protected model: Model<ICartDoc>

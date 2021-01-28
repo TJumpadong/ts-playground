@@ -1,7 +1,9 @@
+import { ICartDoc } from '../interfaces/cart'
+import { IProductDoc } from '../interfaces/product'
 import getCartSummary, { ICartSummary } from '../modules/getCartSummary'
-import CartModel, { ICart, ICartDoc, ICartItem } from "../models/cart"
+import CartModel from "../models/cart"
 import OrderModel, { IOrder, IOrderDoc } from "../models/order"
-import ProductModel, { IProduct, IProductDoc } from "../models/product"
+import ProductModel from "../models/product"
 
 class OrderService {
   protected orderModel: OrderModel

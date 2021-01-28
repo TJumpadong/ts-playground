@@ -1,9 +1,14 @@
-import ProductModel, { IProductDoc } from "../models/product"
+import { injectable, inject } from 'inversify'
 
+import { MODEL_IDENTIFIER } from '../constants/identifiers'
+import { IProductDoc } from '../interfaces/product'
+import ProductModel from "../models/product"
+
+@injectable()
 class ProductService {
   protected productModel: ProductModel
 
-  constructor(productModel: ProductModel) {
+  constructor(@inject(MODEL_IDENTIFIER.PRODUCT) productModel: ProductModel) {
     this.productModel = productModel
   }
 

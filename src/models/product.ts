@@ -1,13 +1,8 @@
-import { Document, model, Model, Schema } from 'mongoose'
+import { injectable } from 'inversify'
+import { model, Model, Schema } from 'mongoose'
+import { IProduct, IProductDoc } from '../interfaces/product'
 
-export interface IProduct {
-  name: string,
-  price: number,
-  images: Array<string>,
-}
-
-export interface IProductDoc extends Document, IProduct {}
-
+@injectable()
 class ProductModel {
   protected model: Model<IProductDoc>
 

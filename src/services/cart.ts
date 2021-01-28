@@ -1,6 +1,8 @@
+import { ICart, ICartItem } from '../interfaces/cart'
+import { IProductDoc } from '../interfaces/product'
 import getCartSummary, { ICartSummary } from '../modules/getCartSummary'
-import CartModel, { ICart, ICartItem } from '../models/cart'
-import ProductModel, { IProductDoc } from '../models/product'
+import CartModel from '../models/cart'
+import ProductModel from '../models/product'
 
 class CartService {
   protected cartModel: CartModel

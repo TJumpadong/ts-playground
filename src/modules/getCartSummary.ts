@@ -1,5 +1,5 @@
-import { ICart, ICartItem } from '../models/cart'
-import { IProductDoc } from '../models/product'
+import { ICart, ICartItem } from '../interfaces/cart'
+import { IProductDoc } from '../interfaces/product'
 
 const limitFloatLength = (num: number): number => parseFloat(num.toFixed(2))
 
