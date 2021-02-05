@@ -1,33 +1,33 @@
+import { injectable, inject } from 'inversify'
+import { MODEL_IDENTIFIER } from '../constants/identifiers'
 import { ICart, ICartItem } from '../interfaces/cart'
 import { IProductDoc } from '../interfaces/product'
 import getCartSummary, { ICartSummary } from '../modules/getCartSummary'
 import CartModel from '../models/cart'
 import ProductModel from '../models/product'
 
+@injectable()
 class CartService {
-  protected cartModel: CartModel
-  protected productModel: ProductModel
-
-  constructor(cartModel: CartModel, productModel: ProductModel) {
-    this.cartModel = cartModel
-    this.productModel = productModel
-  }
+  constructor(
+    @inject(MODEL_IDENTIFIER.CART) protected cartModel: CartModel,
+    @inject(MODEL_IDENTIFIER.PRODUCT) protected productModel: ProductModel,
+  ) {}
 
   async getItemSummary(userId: string): Promise<ICartSummary> {
-    const cart: ICart = await this.cartModel.getByOwnerId(userId)
+    const cart = await this.cartModel.getByOwnerId(userId)
     if (!cart) {
       const emptyCartSummary: ICartSummary = { items: [], price: 0, totalPrice: 0 }
       return emptyCartSummary
     }
 
-    const cartItemIds: Array<string> = cart.items.map(item => item._id)
-    const products: Array<IProductDoc> = await this.productModel.listByIds(cartItemIds)
+    const cartItemIds = cart.items.map(item => item._id)
+    const products = await this.productModel.listByIds(cartItemIds)
 
     return getCartSummary(cart, products)
   }
 
   async getByOwnerId(userId: string): Promise<ICart> {
-    const cart: ICart = await this.cartModel.getByOwnerId(userId)
+    const cart = await this.cartModel.getByOwnerId(userId)
     if (!cart) throw new Error('Product not found')
 
     return cart
@@ -37,7 +37,7 @@ class CartService {
     // validate productId
     // validate quantity
     // update cart items
-    const existingCart: ICart = await this.cartModel.getByOwnerId(userId)
+    const existingCart = await this.cartModel.getByOwnerId(userId)
     const newCart: ICart = {
       userId,
       items: [],

@@ -7,7 +7,7 @@ export interface ICartItem {
 
 export interface ICart {
   userId: string,
-  items: Array<ICartItem>,
+  items: ICartItem[],
 }
 
 export interface ICartDoc extends Document, ICart {}

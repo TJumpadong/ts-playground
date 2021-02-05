@@ -4,24 +4,23 @@ import getCartSummary, { ICartSummary } from '../modules/getCartSummary'
 import CartModel from "../models/cart"
 import OrderModel, { IOrder, IOrderDoc } from "../models/order"
 import ProductModel from "../models/product"
+import { MODEL_IDENTIFIER } from '../constants/identifiers'
+import { injectable, inject } from 'inversify'
 
+@injectable()
 class OrderService {
-  protected orderModel: OrderModel
-  protected cartModel: CartModel
-  protected productModel: ProductModel
-
-  constructor(orderModel: OrderModel, cartModel: CartModel, productModel: ProductModel) {
-    this.orderModel = orderModel
-    this.cartModel = cartModel
-    this.productModel = productModel
-  }
+  constructor(
+    @inject(MODEL_IDENTIFIER.ORDER) protected orderModel: OrderModel,
+    @inject(MODEL_IDENTIFIER.CART) protected cartModel: CartModel,
+    @inject(MODEL_IDENTIFIER.PRODUCT) protected productModel: ProductModel,
+  ) {}
 
   async create(userId: string, address: string): Promise<IOrderDoc> {
-    const cart: ICartDoc = await this.cartModel.getByOwnerId(userId)
+    const cart = await this.cartModel.getByOwnerId(userId)
     if (!cart) throw new Error('Cannot checkout without cart')
 
-    const cartItemIds: Array<string> = cart.items.map(item => item._id)
-    const products: Array<IProductDoc> = await this.productModel.listByIds(cartItemIds)
+    const cartItemIds: string[] = cart.items.map(item => item._id)
+    const products: IProductDoc[] = await this.productModel.listByIds(cartItemIds)
 
     const cartItemSummary: ICartSummary = getCartSummary(cart, products)
     const order: IOrder = {
@@ -47,8 +46,12 @@ class OrderService {
     return this.orderModel.list(userId)
   }
 
-  get(userId: string, orderId: string) {
-    return this.orderModel.get(userId, orderId)
+  async get(userId: string, orderId: string): Promise<IOrder> {
+    const order = await this.orderModel.get(userId, orderId)
+    if (!order)
+      throw new Error('Order not found')
+    
+    return order
   }
 }
 

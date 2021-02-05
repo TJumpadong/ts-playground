@@ -1,6 +1,8 @@
+import { injectable } from 'inversify'
 import { Model, model, Schema } from 'mongoose'
 import { ICart, ICartDoc } from '../interfaces/cart'
 
+@injectable()
 class CartModel {
   protected model: Model<ICartDoc>
 
@@ -13,7 +15,7 @@ class CartModel {
     this.model = model<ICartDoc>('Cart', cartSchema)
   }
 
-  getByOwnerId(userId: string) {
+  async getByOwnerId(userId: string): Promise<ICartDoc | null> {
     return this.model.findOne({ userId })
   }
 

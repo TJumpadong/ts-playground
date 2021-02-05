@@ -7,18 +7,18 @@ interface ICartSummaryItem {
   _id: string,
   name: string,
   price: number,
-  images: Array<string>,
+  images: string[],
   quantity: number,
 }
 
 export interface ICartSummary {
-  items: Array<ICartSummaryItem>,
+  items: ICartSummaryItem[],
   price: number,
   totalPrice: number,
 }
 
-const getCartSummary = (cart: ICart, products: Array<IProductDoc>): ICartSummary => {
-  const cartItems: Array<ICartSummaryItem> = []
+const getCartSummary = (cart: ICart, products: IProductDoc[]): ICartSummary => {
+  const cartItems: ICartSummaryItem[] = []
 
   cart.items.forEach(item => {
     const product = products.find(product => product._id === item._id)

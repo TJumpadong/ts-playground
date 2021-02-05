@@ -12,12 +12,13 @@ class ProductModel {
       price: String,
       images: [String],
     })
-
+    
     this.model = model<IProductDoc>('Product', productSchema)
   }
 
-  list() {
-    return this.model.find()
+  async list(): Promise<IProductDoc[]> {
+    const products = await this.model.find()
+    return products
   }
 
   async create(product: IProduct) {
@@ -26,11 +27,11 @@ class ProductModel {
     return createdProduct
   }
 
-  get(id: string) {
+  async get(id: string): Promise<IProductDoc | null> {
     return this.model.findById(id)
   }
 
-  listByIds(ids: Array<string>) {
+  listByIds(ids: string[]) {
     return this.model.find({ _id: { $in: ids } })
   }
 }

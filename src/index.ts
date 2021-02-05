@@ -1,23 +1,17 @@
-import express, { Request, Response } from 'express'
+import 'reflect-metadata'
+
+import { InversifyExpressServer } from 'inversify-express-utils'
+import express, { NextFunction, Request, Response } from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import mongoose from 'mongoose'
-
-import routes from './api'
-import ProductService from './services/product'
-import CartService from './services/cart'
-import OrderService from './services/order'
-import ProductModel from './models/product'
-import CartModel from './models/cart'
-import OrderModel from './models/order'
-
 import config from './config'
+import container from './ioc/inversify.config'
+import AuthProvider from './ioc/providers/auth'
+import { AppError } from './interfaces/common'
+import { STATUS } from './constants/response'
 
-const app = express()
 const port = 3000
-app.use(cors())
-app.use(express.json())
-
-const MOCK_USER_ID = '1'
 
 mongoose.connect('mongodb://localhost:27017/e-shopping', {
   useNewUrlParser: true,
@@ -28,75 +22,31 @@ mongoose.connect('mongodb://localhost:27017/e-shopping', {
 })
 mongoose.set('useFindAndModify', false)
 
-const getUserIdFromSession = () => MOCK_USER_ID
+const server = new InversifyExpressServer(container, null, null, null, AuthProvider)
 
-// const productModel = new ProductModel()
-// const cartModel = new CartModel()
-// const orderModel = new OrderModel()
-// const productService = new ProductService(productModel)
-// const cartService = new CartService(cartModel, productModel)
-// const orderService = new OrderService(orderModel, cartModel, productModel)
+server.setConfig(app => {
+  app.use(cors())
+  app.use(helmet())
+  app.use(express.urlencoded({ extended: true }))
+  app.use(express.json())
+})
+
+server.setErrorConfig(app => {
+  app.use((err: AppError, _req: Request, res: Response, _next: NextFunction) => {
+    const httpStatus = 'status' in err ? err.status : STATUS.INTER_ERROR
+    res.status(httpStatus)
+    res.json({
+      message: err.message,
+    })
+  })
+})
+
+const app = server.build()
+
+app.listen(port)
+console.log(`API listening at http://localhost:${port}`)
 
 // TODO: store config/secret in process.env for each env (test/production)
 // TODO: query/body validation middleware
 // TODO: error handler
 // TODO: handle parsing data type
-
-app.get('/', (req, res) => {
-  res.send('ok')
-})
-
-app.use(routes())
-
-// app.get('/carts', async (req, res) => {
-//   const userId = getUserIdFromSession()
-//   const cartItemSummary = await cartService.getItemSummary(userId)
-//   res.json(cartItemSummary)
-// })
-
-// app.put('/carts', async (req, res) => {
-//   const userId = getUserIdFromSession()
-//   const productId = req.body.productId
-//   const rawQuantity = req.body.quantity
-//   const quantity = parseInt(rawQuantity, 10)
-
-//   const cartItemSummary = await cartService.update(userId, productId, quantity)
-
-//   res.json(cartItemSummary)
-// })
-
-// app.post('/orders', async (req, res) => {
-//   const userId = getUserIdFromSession()
-//   const address = req.body.address
-
-//   const order = await orderService.create(userId, address)
-//   res.json(order)
-// })
-
-// app.get('/orders', async (req, res) => {
-//   const userId = getUserIdFromSession()
-//   const orders = await orderService.list(userId)
-//   res.json(orders)
-// })
-
-// app.get('/orders/:orderId', async (req, res) => {
-//   const userId = getUserIdFromSession()
-//   const orderId = req.params.orderId
-
-//   const order = await orderService.get(userId, orderId)
-
-//   res.json(order)
-// })
-
-// error handlers
-app.use((err: Error, _req: Request, res: Response, _next: Function) => {
-  // res.status(err.status || 500)
-  res.status(500)
-  res.json({
-    message: err.message,
-  })
-})
-
-app.listen(port, () => {
-  console.log(`API listening at http://localhost:${port}`)
-})

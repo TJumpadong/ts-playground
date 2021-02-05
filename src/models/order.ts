@@ -1,3 +1,4 @@
+import { injectable } from 'inversify'
 import { Document, Model, model, Schema } from 'mongoose'
 
 interface IOrderItem {
@@ -9,13 +10,14 @@ export interface IOrder {
   address: string,
   userId: string,
   orderId: string,
-  items: Array<IOrderItem>,
+  items: IOrderItem[],
   price: number,
   totalPrice: number,
 }
 
 export interface IOrderDoc extends Document, IOrder {}
 
+@injectable()
 class OrderModel {
   model: Model<IOrderDoc>
 
@@ -42,7 +44,7 @@ class OrderModel {
     return this.model.find({ userId })
   }
 
-  get(userId: string, orderId: string) {
+  async get(userId: string, orderId: string): Promise<IOrderDoc | null> {
     return this.model.findOne({ _id: orderId, userId })
   }
 }
