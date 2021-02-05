@@ -10,4 +10,18 @@ export interface ICart {
   items: ICartItem[],
 }
 
+export interface ICartSummaryItem {
+  _id: string,
+  name: string,
+  price: number,
+  images: string[],
+  quantity: number,
+}
+
+export interface ICartSummary {
+  items: ICartSummaryItem[],
+  price: number,
+  totalPrice: number,
+}
+
 export interface ICartDoc extends Document, ICart {}

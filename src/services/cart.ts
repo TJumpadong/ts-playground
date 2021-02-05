@@ -1,8 +1,6 @@
 import { injectable, inject } from 'inversify'
 import { MODEL_IDENTIFIER } from '../constants/identifiers'
-import { ICart, ICartItem } from '../interfaces/cart'
-import { IProductDoc } from '../interfaces/product'
-import getCartSummary, { ICartSummary } from '../modules/getCartSummary'
+import { ICart, ICartItem, ICartSummary } from '../interfaces/cart'
 import CartModel from '../models/cart'
 import ProductModel from '../models/product'
 
@@ -23,7 +21,7 @@ class CartService {
     const cartItemIds = cart.items.map(item => item._id)
     const products = await this.productModel.listByIds(cartItemIds)
 
-    return getCartSummary(cart, products)
+    return this.cartModel.getSummary(cart, products)
   }
 
   async getByOwnerId(userId: string): Promise<ICart> {

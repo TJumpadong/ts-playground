@@ -1,6 +1,5 @@
-import { ICartDoc } from '../interfaces/cart'
+import { ICartDoc, ICartSummary } from '../interfaces/cart'
 import { IProductDoc } from '../interfaces/product'
-import getCartSummary, { ICartSummary } from '../modules/getCartSummary'
 import CartModel from "../models/cart"
 import OrderModel, { IOrder, IOrderDoc } from "../models/order"
 import ProductModel from "../models/product"
@@ -22,7 +21,7 @@ class OrderService {
     const cartItemIds: string[] = cart.items.map(item => item._id)
     const products: IProductDoc[] = await this.productModel.listByIds(cartItemIds)
 
-    const cartItemSummary: ICartSummary = getCartSummary(cart, products)
+    const cartItemSummary: ICartSummary = this.cartModel.getSummary(cart, products)
     const order: IOrder = {
       address,
       userId: cart.userId,
