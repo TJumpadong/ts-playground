@@ -1,23 +1,23 @@
 import { injectable, inject } from 'inversify'
 
 import { MODEL_IDENTIFIER } from '../constants/identifiers'
-import { IProductDoc } from '../interfaces/product'
-import ProductModel from "../models/product"
+import { IProduct, IProductDoc } from '../interfaces/product'
+import ProductModel from '../models/product'
 import { NotFoundError } from '../utils/error'
 
 @injectable()
 class ProductService {
-  constructor(
+  constructor (
     @inject(MODEL_IDENTIFIER.PRODUCT) protected productModel: ProductModel
   ) {}
 
-  list() {
-    return this.productModel.list()
+  async list (): Promise<IProduct[]> {
+    return await this.productModel.list()
   }
 
-  async get(id: string): Promise<IProductDoc> {
+  async get (id: string): Promise<IProductDoc> {
     const product = await this.productModel.get(id)
-    if (!product) throw new NotFoundError('Product not found')
+    if (product === null) throw new NotFoundError('Product not found')
 
     return product
   }

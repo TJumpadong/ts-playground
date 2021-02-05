@@ -6,33 +6,34 @@ import { IProduct, IProductDoc } from '../interfaces/product'
 class ProductModel {
   protected model: Model<IProductDoc>
 
-  constructor() {
+  constructor () {
     const productSchema = new Schema<IProduct>({
       name: String,
       price: String,
-      images: [String],
+      images: [String]
     })
-    
+
     this.model = model<IProductDoc>('Product', productSchema)
   }
 
-  async list(): Promise<IProductDoc[]> {
+  async list (): Promise<IProductDoc[]> {
     const products = await this.model.find()
     return products
   }
 
-  async create(product: IProduct) {
-    const newProduct = new this.model(product)
+  async create (product: IProduct): Promise<IProductDoc> {
+    const ProductDSModel = this.model
+    const newProduct = new ProductDSModel(product)
     const createdProduct = await newProduct.save()
     return createdProduct
   }
 
-  async get(id: string): Promise<IProductDoc | null> {
-    return this.model.findById(id)
+  async get (id: string): Promise<IProductDoc | null> {
+    return await this.model.findById(id)
   }
 
-  listByIds(ids: string[]) {
-    return this.model.find({ _id: { $in: ids } })
+  async listByIds (ids: string[]): Promise<IProductDoc[]> {
+    return await this.model.find({ _id: { $in: ids } })
   }
 }
 

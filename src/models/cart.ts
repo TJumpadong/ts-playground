@@ -8,7 +8,7 @@ import { getFixedNotation } from '../utils/number'
 class CartModel {
   protected model: Model<ICartDoc>
 
-  constructor() {
+  constructor () {
     const cartSchema = new Schema<ICart>({
       userId: String,
       items: [{ _id: String, quantity: Number }]
@@ -17,38 +17,38 @@ class CartModel {
     this.model = model<ICartDoc>('Cart', cartSchema)
   }
 
-  async getByOwnerId(userId: string): Promise<ICartDoc | null> {
-    return this.model.findOne({ userId })
+  async getByOwnerId (userId: string): Promise<ICartDoc | null> {
+    return await this.model.findOne({ userId })
   }
 
-  updateOrCreate(userId: string, cart: ICart) {
-    return this.model.findOneAndUpdate({ userId }, cart, { new: true, upsert: true })
+  async updateOrCreate (userId: string, cart: ICart): Promise<ICartDoc> {
+    return await this.model.findOneAndUpdate({ userId }, cart, { new: true, upsert: true })
   }
 
-  removeByOwnerId(userId: string) {
-    return this.model.deleteOne({ userId })
+  async removeByOwnerId (userId: string): Promise<void> {
+    await this.model.deleteOne({ userId })
   }
 
-  getSummary(cart: ICart, products: IProductDoc[]): ICartSummary {
+  getSummary (cart: ICart, products: IProductDoc[]): ICartSummary {
     const cartItems: ICartSummaryItem[] = []
 
     cart.items.forEach(item => {
       const product = products.find(product => product._id === item._id)
 
-      if (product) {
+      if (product !== undefined) {
         cartItems.push({
           _id: product._id,
           name: product.name,
           price: product.price,
           images: product.images,
-          quantity: item.quantity || 0
+          quantity: item.quantity
         })
       }
     })
 
     const cartPrice: number = cartItems.reduce((price: number, item: ICartSummaryItem) =>
       price + getFixedNotation(item.price * item.quantity),
-      0
+    0
     )
 
     return {

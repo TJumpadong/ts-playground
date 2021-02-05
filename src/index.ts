@@ -11,15 +11,17 @@ import AuthProvider from './ioc/providers/auth'
 import { AppError } from './interfaces/common'
 import { STATUS } from './constants/response'
 
-const port = 3000
-
 mongoose.connect('mongodb://localhost:27017/e-shopping', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   user: config.dbUser,
   pass: config.dbPassword,
-  authSource: config.dbAuthSource,
-})
+  authSource: config.dbAuthSource
+}).then(
+  () => { console.log('Connected to mongodb') },
+  () => { console.error('Failed to connect mongodb') }
+)
+
 mongoose.set('useFindAndModify', false)
 
 const server = new InversifyExpressServer(container, null, null, null, AuthProvider)
@@ -36,15 +38,15 @@ server.setErrorConfig(app => {
     const httpStatus = 'status' in err ? err.status : STATUS.INTER_ERROR
     res.status(httpStatus)
     res.json({
-      message: err.message,
+      message: err.message
     })
   })
 })
 
 const app = server.build()
 
-app.listen(port)
-console.log(`API listening at http://localhost:${port}`)
+app.listen(config.appPort)
+console.log(`API listening at http://localhost:${config.appPort}`)
 
 // TODO: store config/secret in process.env for each env (test/production)
 // TODO: query/body validation middleware

@@ -1,7 +1,7 @@
-import { CustomError } from "../utils/error"
+import { CustomError } from '../utils/error'
 
 type AppError = CustomError | Error
 
 export {
-  AppError,
+  AppError
 }

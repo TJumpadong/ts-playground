@@ -1,6 +1,6 @@
 import { Container } from 'inversify'
 
-import { SERVICE_IDENTIFIER, MODEL_IDENTIFIER } from "../constants/identifiers"
+import { SERVICE_IDENTIFIER, MODEL_IDENTIFIER } from '../constants/identifiers'
 
 import CartModel from '../models/cart'
 import OrderModel from '../models/order'

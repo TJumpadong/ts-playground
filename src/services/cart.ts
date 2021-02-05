@@ -6,14 +6,14 @@ import ProductModel from '../models/product'
 
 @injectable()
 class CartService {
-  constructor(
+  constructor (
     @inject(MODEL_IDENTIFIER.CART) protected cartModel: CartModel,
-    @inject(MODEL_IDENTIFIER.PRODUCT) protected productModel: ProductModel,
+    @inject(MODEL_IDENTIFIER.PRODUCT) protected productModel: ProductModel
   ) {}
 
-  async getItemSummary(userId: string): Promise<ICartSummary> {
+  async getItemSummary (userId: string): Promise<ICartSummary> {
     const cart = await this.cartModel.getByOwnerId(userId)
-    if (!cart) {
+    if (cart === null) {
       const emptyCartSummary: ICartSummary = { items: [], price: 0, totalPrice: 0 }
       return emptyCartSummary
     }
@@ -24,29 +24,29 @@ class CartService {
     return this.cartModel.getSummary(cart, products)
   }
 
-  async getByOwnerId(userId: string): Promise<ICart> {
+  async getByOwnerId (userId: string): Promise<ICart> {
     const cart = await this.cartModel.getByOwnerId(userId)
-    if (!cart) throw new Error('Product not found')
+    if (cart === null) throw new Error('Product not found')
 
     return cart
   }
 
-  async update(userId: string, productId: string, quantity: number) {
+  async update (userId: string, productId: string, quantity: number): Promise<ICartSummary> {
     // validate productId
     // validate quantity
     // update cart items
     const existingCart = await this.cartModel.getByOwnerId(userId)
     const newCart: ICart = {
       userId,
-      items: [],
+      items: []
     }
-    const cart = existingCart || newCart
+    const cart = existingCart ?? newCart
 
     const itemIndex: number = cart.items.findIndex(item => item._id === productId)
     const item: ICartItem = cart.items[itemIndex]
 
     // final quantity should not be less than 0
-    if (item) {
+    if (item !== null) {
       const finalQuantity: number = item.quantity + quantity
       if (finalQuantity <= 0) {
         cart.items.splice(itemIndex, 1)

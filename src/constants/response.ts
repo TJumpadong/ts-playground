@@ -4,5 +4,5 @@ enum STATUS {
 }
 
 export {
-  STATUS,
+  STATUS
 }
