@@ -1,6 +1,7 @@
 import { NextFunction, Response } from 'express'
 import { inject } from 'inversify'
 import { BaseHttpController, controller, httpGet, httpPut, next as nextFunction, requestBody, response } from 'inversify-express-utils'
+import { JsonResult } from 'inversify-express-utils/dts/results'
 import { SERVICE_IDENTIFIER } from '../constants/identifiers'
 import CartService from '../services/cart'
 
@@ -16,11 +17,11 @@ class CartController extends BaseHttpController {
   async getById (
     @response() res: Response,
       @nextFunction() next: NextFunction
-  ): Promise<void> {
+  ): Promise<JsonResult| void> {
     try {
       const userId = this.httpContext.user.details._id as string
       const cartItemSummary = await this.cartService.getItemSummary(userId)
-      res.json(cartItemSummary)
+      return this.json(cartItemSummary)
     } catch (err) {
       next(err)
     }
@@ -31,12 +32,12 @@ class CartController extends BaseHttpController {
     @requestBody() newProduct: { productId: string, quantity: number },
       @response() res: Response,
       @nextFunction() next: NextFunction
-  ): Promise<void> {
+  ): Promise<JsonResult | void> {
     try {
       const userId = this.httpContext.user.details._id as string
       const { productId, quantity } = newProduct
       const cartItemSummary = await this.cartService.update(userId, productId, quantity)
-      res.json(cartItemSummary)
+      return this.json(cartItemSummary)
     } catch (err) {
       next(err)
     }

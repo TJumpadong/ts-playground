@@ -21,8 +21,8 @@ class CartModel {
     return await this.model.findOne({ userId })
   }
 
-  async updateOrCreate (userId: string, cart: ICart): Promise<ICartDoc> {
-    return await this.model.findOneAndUpdate({ userId }, cart, { new: true, upsert: true })
+  async updateOrCreate (cart: ICart): Promise<ICartDoc> {
+    return await this.model.findOneAndUpdate({ userId: cart.userId }, cart, { new: true, upsert: true })
   }
 
   async removeByOwnerId (userId: string): Promise<void> {

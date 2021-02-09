@@ -57,7 +57,7 @@ class CartService {
       cart.items.push({ _id: productId, quantity })
     }
 
-    await this.cartModel.updateOrCreate(userId, cart)
+    await this.cartModel.updateOrCreate(cart)
     return this.getItemSummary(userId)
   }
 }

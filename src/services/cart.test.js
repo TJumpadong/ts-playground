@@ -1,4 +1,5 @@
-// const CartService = require('./cart')
-
-// describe('cart service unit tests', () => {
-// })
+describe('CartService', () => {
+  it('should be ok', () => {
+    expect(true).toBe(true)
+  })
+})
