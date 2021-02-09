@@ -2,7 +2,9 @@ import { NextFunction, Response } from 'express'
 import { inject } from 'inversify'
 import { BaseHttpController, controller, httpGet, httpPost, next as nextFunction, requestBody, requestParam, response } from 'inversify-express-utils'
 import { JsonResult } from 'inversify-express-utils/dts/results'
+
 import { SERVICE_IDENTIFIER } from '../constants/identifiers'
+
 import OrderService from '../services/order'
 
 @controller('/orders')
@@ -17,7 +19,7 @@ class OrderController extends BaseHttpController {
   async list (
     @response() res: Response,
       @nextFunction() next: NextFunction
-  ): Promise<JsonResult | void> {
+  ): Promise<JsonResult | undefined> {
     try {
       const userId = this.httpContext.user.details._id as string
       const orders = await this.orderService.list(userId)
@@ -32,7 +34,7 @@ class OrderController extends BaseHttpController {
     @requestBody() orderDetails: { address: string },
       @response() res: Response,
       @nextFunction() next: NextFunction
-  ): Promise<JsonResult | void> {
+  ): Promise<JsonResult | undefined> {
     try {
       const userId = this.httpContext.user.details._id as string
       const { address } = orderDetails
@@ -48,7 +50,7 @@ class OrderController extends BaseHttpController {
     @requestParam('orderId') orderId: string,
       @response() res: Response,
       @nextFunction() next: NextFunction
-  ): Promise<JsonResult | void> {
+  ): Promise<JsonResult | undefined> {
     try {
       const userId = this.httpContext.user.details._id as string
       const order = await this.orderService.get(userId, orderId)

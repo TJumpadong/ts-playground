@@ -1,9 +1,6 @@
-import { Document } from 'mongoose'
-
 export interface IProduct {
+  _id?: string
   name: string
   price: number
   images: string[]
 }
-
-export interface IProductDoc extends Document, IProduct {}

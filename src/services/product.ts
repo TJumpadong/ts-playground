@@ -1,8 +1,10 @@
 import { injectable, inject } from 'inversify'
 
 import { MODEL_IDENTIFIER } from '../constants/identifiers'
-import { IProduct, IProductDoc } from '../interfaces/product'
+import { IProduct } from '../interfaces/product'
+
 import ProductModel from '../models/product'
+
 import { NotFoundError } from '../utils/error'
 
 @injectable()
@@ -15,7 +17,7 @@ class ProductService {
     return await this.productModel.list()
   }
 
-  async get (id: string): Promise<IProductDoc> {
+  async get (id: string): Promise<IProduct> {
     const product = await this.productModel.get(id)
     if (product === null) throw new NotFoundError('Product not found')
 

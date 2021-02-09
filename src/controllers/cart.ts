@@ -2,7 +2,9 @@ import { NextFunction, Response } from 'express'
 import { inject } from 'inversify'
 import { BaseHttpController, controller, httpGet, httpPut, next as nextFunction, requestBody, response } from 'inversify-express-utils'
 import { JsonResult } from 'inversify-express-utils/dts/results'
+
 import { SERVICE_IDENTIFIER } from '../constants/identifiers'
+
 import CartService from '../services/cart'
 
 @controller('/carts')
@@ -17,7 +19,7 @@ class CartController extends BaseHttpController {
   async getById (
     @response() res: Response,
       @nextFunction() next: NextFunction
-  ): Promise<JsonResult| void> {
+  ): Promise<JsonResult | undefined> {
     try {
       const userId = this.httpContext.user.details._id as string
       const cartItemSummary = await this.cartService.getItemSummary(userId)
@@ -32,7 +34,7 @@ class CartController extends BaseHttpController {
     @requestBody() newProduct: { productId: string, quantity: number },
       @response() res: Response,
       @nextFunction() next: NextFunction
-  ): Promise<JsonResult | void> {
+  ): Promise<JsonResult | undefined> {
     try {
       const userId = this.httpContext.user.details._id as string
       const { productId, quantity } = newProduct

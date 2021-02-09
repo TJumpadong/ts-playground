@@ -1,28 +1,16 @@
 import { injectable } from 'inversify'
 import { Document, Model, model, Schema } from 'mongoose'
 
-interface IOrderItem {
-  _id: string
-  quantity: number
-}
+import { IOrder } from '../interfaces/order'
 
-export interface IOrder {
-  address: string
-  userId: string
-  orderId: string
-  items: IOrderItem[]
-  price: number
-  totalPrice: number
-}
-
-export interface IOrderDoc extends Document, IOrder {}
+declare type IOrderDoc = Document & IOrder
 
 @injectable()
 class OrderModel {
   model: Model<IOrderDoc>
 
   constructor () {
-    const orderSchema = new Schema<IOrder>({
+    const orderSchema = new Schema({
       address: String,
       userId: String,
       orderId: String,
@@ -34,18 +22,18 @@ class OrderModel {
     this.model = model<IOrderDoc>('Order', orderSchema)
   }
 
-  async create (order: IOrder): Promise<IOrderDoc> {
+  async create (order: IOrder): Promise<IOrder> {
     const OrderDSModel = this.model
     const newOrder = new OrderDSModel(order)
     const createdOrder = await newOrder.save()
     return createdOrder
   }
 
-  async list (userId: string): Promise<IOrderDoc[]> {
+  async list (userId: string): Promise<IOrder[]> {
     return await this.model.find({ userId })
   }
 
-  async get (userId: string, orderId: string): Promise<IOrderDoc | null> {
+  async get (userId: string, orderId: string): Promise<IOrder | null> {
     return await this.model.findOne({ _id: orderId, userId })
   }
 }

@@ -11,7 +11,7 @@ describe('utils - number', () => {
       const result = getFixedNotation(20.8888)
       expect(result).toBe(20.89)
     })
-    
+
     test('fixed notations to 0', () => {
       const result = getFixedNotation(20.8888, 0)
       expect(result).toBe(21)

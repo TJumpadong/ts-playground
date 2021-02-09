@@ -1,6 +1,8 @@
 import { injectable, inject } from 'inversify'
+
 import { MODEL_IDENTIFIER } from '../constants/identifiers'
 import { ICart, ICartItem, ICartSummary } from '../interfaces/cart'
+
 import CartModel from '../models/cart'
 import ProductModel from '../models/product'
 

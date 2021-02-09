@@ -1,11 +1,10 @@
-import { Document } from 'mongoose'
-
 export interface ICartItem {
   _id: string
   quantity: number
 }
 
 export interface ICart {
+  _id?: string
   userId: string
   items: ICartItem[]
 }
@@ -23,5 +22,3 @@ export interface ICartSummary {
   price: number
   totalPrice: number
 }
-
-export interface ICartDoc extends Document, ICart {}

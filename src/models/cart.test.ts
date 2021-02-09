@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
+
 import { ICart } from '../interfaces/cart'
+import { IProduct } from '../interfaces/product'
 
 import CartModel from './cart'
 
@@ -9,7 +11,7 @@ describe('CartModel', () => {
   beforeAll(async () => {
     await mongoose.connect(process.env.MONGO_URL as string, {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
+      useUnifiedTopology: true
     })
 
     mongoose.set('useFindAndModify', false)
@@ -21,17 +23,17 @@ describe('CartModel', () => {
     await mongoose.connection.close()
   })
 
-  it('should create new cart', async () => {
+  test('should create new cart', async () => {
     const userToCreateCart = 'user-create-cart'
     const newCart: ICart = {
       userId: userToCreateCart,
       items: []
     }
     const result = await cartModel.updateOrCreate(newCart)
-    expect(result).toBeDefined()
+    expect(result).toBeTruthy()
   })
 
-  it('should update existing cart', async () => {
+  test('should update existing cart', async () => {
     const userToUpdateCart = 'user-update-cart'
     const newCart: ICart = {
       userId: userToUpdateCart,
@@ -42,16 +44,16 @@ describe('CartModel', () => {
     const cartWithNewItems: ICart = {
       userId: userToUpdateCart,
       items: [{
-        _id: 'item-01',
+        _id: 'product-01',
         quantity: 1
       }]
     }
     const result = await cartModel.updateOrCreate(cartWithNewItems)
-    expect(result).toBeDefined()
+    expect(result).toBeTruthy()
     expect(result.items).toHaveLength(1)
   })
 
-  it('should get back cart', async () => {
+  test('should get back cart', async () => {
     const userToGetCart = 'user-get-cart'
     const newCart: ICart = {
       userId: userToGetCart,
@@ -63,110 +65,114 @@ describe('CartModel', () => {
     expect(result).toBeTruthy()
   })
 
-  // it('should remove cart', () => {
+  test('should remove cart', async () => {
+    const userToDeleteCart = 'user-delete-cart'
+    const newCart: ICart = {
+      userId: userToDeleteCart,
+      items: []
+    }
+    await cartModel.updateOrCreate(newCart)
+    await cartModel.removeByOwnerId(userToDeleteCart)
 
-  // })
+    const result = await cartModel.getByOwnerId(userToDeleteCart)
+    expect(result).toBeNull()
+  })
 
-  // it('should get summary back', () => {
+  describe('getSummary', () => {
+    test('product not found', () => {
+      const cart: ICart = {
+        userId: 'user-01',
+        items: [{
+          _id: 'product-01',
+          quantity: 1
+        }]
+      }
+      const products: IProduct[] = []
+      const result = cartModel.getSummary(cart, products)
+      expect(result).toEqual({
+        items: [],
+        price: 0,
+        totalPrice: 0
+      })
+    })
 
-  // })
+    test('single item', () => {
+      const cart: ICart = {
+        userId: 'user-01',
+        items: [{
+          _id: 'product-01',
+          quantity: 1
+        }]
+      }
+      const products: IProduct[] = [{
+        _id: 'product-01',
+        price: 10,
+        name: 'product-01',
+        images: []
+      }]
+
+      const result = cartModel.getSummary(cart, products)
+      expect(result.items).toHaveLength(1)
+      expect(result.price).toEqual(10)
+      expect(result.totalPrice).toEqual(10.7)
+    })
+
+    test('multiple items', () => {
+      const cart: ICart = {
+        userId: 'user-01',
+        items: [{
+          _id: 'product-01',
+          quantity: 1
+        }, {
+          _id: 'product-02',
+          quantity: 1
+        }]
+      }
+      const products: IProduct[] = [{
+        _id: 'product-01',
+        price: 10,
+        name: 'product-01',
+        images: []
+      }, {
+        _id: 'product-02',
+        price: 10,
+        name: 'product-02',
+        images: []
+      }]
+
+      const result = cartModel.getSummary(cart, products)
+      expect(result.items).toHaveLength(2)
+      expect(result.price).toEqual(20)
+      expect(result.totalPrice).toEqual(21.4)
+    })
+
+    test('mixed items', () => {
+      const cart: ICart = {
+        userId: 'user-01',
+        items: [{
+          _id: 'product-01',
+          quantity: 1
+        }, {
+          _id: 'product-02',
+          quantity: 2
+        }]
+      }
+      const products: IProduct[] = [{
+        _id: 'product-01',
+        price: 10,
+        name: 'product-01',
+        images: []
+      }, {
+        _id: 'product-02',
+        price: 10,
+        name: 'product-02',
+        images: []
+      }]
+
+      const result = cartModel.getSummary(cart, products)
+      expect(result.items).toHaveLength(2)
+      expect(result.price).toEqual(30)
+      expect(result.totalPrice).toEqual(32.1)
+    })
+  })
 })
-
-// const getCartItemSummary = require('./getCartSummary').default
-// const mockObjectId = (val) => ({
-//   val,
-//   equals: term => val === term.val
-// })
-
-// describe('getCartItemSummary module unit tests', () => {
-//   test('cart empty', () => {
-//     const result = getCartItemSummary()
-//     expect(result).toEqual({
-//       items: [],
-//       price: 0,
-//       totalPrice: 0
-//     })
-//   })
-
-//   test('product not found', () => {
-//     const cart = {
-//       items: [{
-//         _id: mockObjectId('1'),
-//         quantity: 1
-//       }]
-//     }
-
-//     const result = getCartItemSummary(cart)
-//     expect(result).toEqual({
-//       items: [],
-//       price: 0,
-//       totalPrice: 0
-//     })
-//   })
-
-//   test('single item', () => {
-//     const cart = {
-//       items: [{
-//         _id: mockObjectId('1'),
-//         quantity: 1
-//       }]
-//     }
-//     const products = [{
-//       _id: mockObjectId('1'),
-//       price: 10
-//     }]
-
-//     const result = getCartItemSummary(cart, products)
-//     expect(result.items).toHaveLength(1)
-//     expect(result.price).toEqual(10)
-//     expect(result.totalPrice).toEqual(10.7)
-//   })
-
-//   test('multiple items', () => {
-//     const cart = {
-//       items: [{
-//         _id: mockObjectId('1'),
-//         quantity: 1
-//       }, {
-//         _id: mockObjectId('2'),
-//         quantity: 1
-//       }]
-//     }
-//     const products = [{
-//       _id: mockObjectId('1'),
-//       price: 10
-//     }, {
-//       _id: mockObjectId('2'),
-//       price: 10
-//     }]
-
-//     const result = getCartItemSummary(cart, products)
-//     expect(result.items).toHaveLength(2)
-//     expect(result.price).toEqual(20)
-//     expect(result.totalPrice).toEqual(21.4)
-//   })
-
-//   test('mixed items', () => {
-//     const cart = {
-//       items: [{
-//         _id: mockObjectId('1'),
-//         quantity: 1
-//       }, {
-//         _id: mockObjectId('2'),
-//         quantity: 2
-//       }]
-//     }
-//     const products = [{
-//       _id: mockObjectId('1'),
-//       price: 10
-//     }, {
-//       _id: mockObjectId('2'),
-//       price: 10
-//     }]
-
-//     const result = getCartItemSummary(cart, products)
-//     expect(result.items).toHaveLength(2)
-//     expect(result.price).toEqual(30)
-//     expect(result.totalPrice).toEqual(32.1)
-//   })
-// })

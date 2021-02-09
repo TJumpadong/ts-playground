@@ -7,4 +7,4 @@ module.exports = {
   testEnvironment: 'node',
   setupFiles: ['./jest.setup.ts'],
   watchPathIgnorePatterns: ['globalConfig']
-};
+}

@@ -9,7 +9,7 @@
     "_dev": "tsc -w & nodemon -q -L dist/index.js",
     "dev": "tsnd --respawn src/index.ts",
     "test": "jest --runInBand --detectOpenHandles src",
-    "lint": "ts-standard --fix"
+    "lint": "ts-standard --fix src"
   },
   "dependencies": {
     "cors": "^2.8.5",

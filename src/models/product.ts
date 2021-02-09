@@ -1,39 +1,42 @@
 import { injectable } from 'inversify'
-import { model, Model, Schema } from 'mongoose'
-import { IProduct, IProductDoc } from '../interfaces/product'
+import { Document, model, Model, Schema } from 'mongoose'
+
+import { IProduct } from '../interfaces/product'
+
+declare type ProductDocument = Document & IProduct
 
 @injectable()
 class ProductModel {
-  protected model: Model<IProductDoc>
+  protected model: Model<ProductDocument>
 
   constructor () {
-    const productSchema = new Schema<IProduct>({
+    const productSchema = new Schema({
       name: String,
       price: String,
       images: [String]
     })
 
-    this.model = model<IProductDoc>('Product', productSchema)
+    this.model = model<ProductDocument>('Product', productSchema)
   }
 
-  async list (): Promise<IProductDoc[]> {
+  async list (): Promise<IProduct[]> {
     const products = await this.model.find()
     return products
   }
 
-  async create (product: IProduct): Promise<IProductDoc> {
+  async create (product: IProduct): Promise<IProduct> {
     const ProductDSModel = this.model
     const newProduct = new ProductDSModel(product)
     const createdProduct = await newProduct.save()
     return createdProduct
   }
 
-  async get (id: string): Promise<IProductDoc | null> {
+  async get (id: string): Promise<IProduct | null> {
     return await this.model.findById(id)
   }
 
-  async listByIds (ids: string[]): Promise<IProductDoc[]> {
-    return await this.model.find({ _id: { $in: ids } })
+  async listByIds (ids: string[]): Promise<IProduct[]> {
+    return await this.model.find({ _id: { $in: ids } }).lean()
   }
 }
 

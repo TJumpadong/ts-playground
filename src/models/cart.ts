@@ -1,15 +1,19 @@
 import { injectable } from 'inversify'
-import { Model, model, Schema } from 'mongoose'
-import { ICart, ICartDoc, ICartSummary, ICartSummaryItem } from '../interfaces/cart'
-import { IProductDoc } from '../interfaces/product'
+import { Document, Model, model, Schema } from 'mongoose'
+
+import { ICart, ICartSummary, ICartSummaryItem } from '../interfaces/cart'
+import { IProduct } from '../interfaces/product'
+
 import { getFixedNotation } from '../utils/number'
+
+declare type ICartDoc = Document & ICart
 
 @injectable()
 class CartModel {
   protected model: Model<ICartDoc>
 
   constructor () {
-    const cartSchema = new Schema<ICart>({
+    const cartSchema = new Schema({
       userId: String,
       items: [{ _id: String, quantity: Number }]
     })
@@ -17,11 +21,11 @@ class CartModel {
     this.model = model<ICartDoc>('Cart', cartSchema)
   }
 
-  async getByOwnerId (userId: string): Promise<ICartDoc | null> {
+  async getByOwnerId (userId: string): Promise<ICart | null> {
     return await this.model.findOne({ userId })
   }
 
-  async updateOrCreate (cart: ICart): Promise<ICartDoc> {
+  async updateOrCreate (cart: ICart): Promise<ICart> {
     return await this.model.findOneAndUpdate({ userId: cart.userId }, cart, { new: true, upsert: true })
   }
 
@@ -29,13 +33,13 @@ class CartModel {
     await this.model.deleteOne({ userId })
   }
 
-  getSummary (cart: ICart, products: IProductDoc[]): ICartSummary {
+  getSummary (cart: ICart, products: IProduct[]): ICartSummary {
     const cartItems: ICartSummaryItem[] = []
 
     cart.items.forEach(item => {
       const product = products.find(product => product._id === item._id)
 
-      if (product !== undefined) {
+      if (product?._id !== undefined) {
         cartItems.push({
           _id: product._id,
           name: product.name,
