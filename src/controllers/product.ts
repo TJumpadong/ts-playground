@@ -1,6 +1,6 @@
-import { NextFunction, Response } from 'express'
+import { NextFunction } from 'express'
 import { inject } from 'inversify'
-import { BaseHttpController, controller, httpGet, next as nextFunction, requestParam, response } from 'inversify-express-utils'
+import { BaseHttpController, controller, httpGet, next as nextFunction, requestParam } from 'inversify-express-utils'
 import { JsonResult } from 'inversify-express-utils/dts/results'
 
 import { SERVICE_IDENTIFIER } from '../constants/identifiers'
@@ -17,12 +17,10 @@ class ProductController extends BaseHttpController {
 
   @httpGet('/')
   async list (
-    @response() res: Response,
-      @nextFunction() next: NextFunction
+    @nextFunction() next: NextFunction
   ): Promise<JsonResult | undefined> {
     try {
       const products = await this.productService.list()
-      // res.json(products)
       return this.json(products)
     } catch (err) {
       next(err)
@@ -32,7 +30,6 @@ class ProductController extends BaseHttpController {
   @httpGet('/:productId')
   async getById (
     @requestParam('productId') productId: string,
-      @response() res: Response,
       @nextFunction() next: NextFunction
   ): Promise<JsonResult | undefined> {
     try {

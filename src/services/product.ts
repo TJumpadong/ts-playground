@@ -3,14 +3,14 @@ import { injectable, inject } from 'inversify'
 import { MODEL_IDENTIFIER } from '../constants/identifiers'
 import { IProduct } from '../interfaces/product'
 
-import ProductModel from '../models/product'
+import { BaseProductModel } from '../models/product'
 
 import { NotFoundError } from '../utils/error'
 
 @injectable()
 class ProductService {
   constructor (
-    @inject(MODEL_IDENTIFIER.PRODUCT) protected productModel: ProductModel
+    @inject(MODEL_IDENTIFIER.PRODUCT) protected productModel: BaseProductModel
   ) {}
 
   async list (): Promise<IProduct[]> {

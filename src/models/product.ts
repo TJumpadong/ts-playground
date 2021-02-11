@@ -3,10 +3,16 @@ import { Document, model, Model, Schema } from 'mongoose'
 
 import { IProduct } from '../interfaces/product'
 
-declare type ProductDocument = Document & IProduct
+export type ProductDocument = Document & IProduct
+
+export abstract class BaseProductModel {
+  abstract create (product: IProduct): Promise<IProduct>
+  abstract get (id: string): Promise<IProduct | null>
+  abstract list (ids?: string[]): Promise<IProduct[]>
+}
 
 @injectable()
-class ProductModel {
+class ProductModel implements BaseProductModel {
   protected model: Model<ProductDocument>
 
   constructor () {
@@ -20,7 +26,7 @@ class ProductModel {
   }
 
   async list (ids: string[] = []): Promise<IProduct[]> {
-    const filterQuery: object = ids.length ? { _id: { $in: ids } } : {}
+    const filterQuery: object = ids.length !== 0 ? { _id: { $in: ids } } : {}
     return await this.model.find(filterQuery)
   }
 

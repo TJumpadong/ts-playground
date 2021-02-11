@@ -58,7 +58,6 @@ describe('ProductModel', () => {
   })
 
   it('should get product list by ids', async () => {
-    const existingProducts = await productModel.list()
     const newProduct: IProduct = {
       name: 'product-04',
       price: 100,
