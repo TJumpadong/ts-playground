@@ -21,7 +21,7 @@ class CartService {
     }
 
     const cartItemIds = cart.items.map(item => item._id)
-    const products = await this.productModel.listByIds(cartItemIds)
+    const products = await this.productModel.list(cartItemIds)
 
     return this.cartModel.getSummary(cart, products)
   }

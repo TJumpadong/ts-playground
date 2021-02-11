@@ -24,7 +24,7 @@ class OrderService {
     if (cart === null || cart._id === undefined) throw new NotFoundError('Cannot checkout without cart')
 
     const cartItemIds: string[] = cart.items.map(item => item._id)
-    const products: IProduct[] = await this.productModel.listByIds(cartItemIds)
+    const products: IProduct[] = await this.productModel.list(cartItemIds)
 
     const cartItemSummary: ICartSummary = this.cartModel.getSummary(cart, products)
     const order: IOrder = {
@@ -39,6 +39,7 @@ class OrderService {
     // check result
     const createdOrder: IOrder = await this.orderModel.create(order)
 
+    // TODO: soft delete => change status of cart
     // reset cart
     await this.cartModel.removeByOwnerId(userId)
 
@@ -56,6 +57,8 @@ class OrderService {
 
     return order
   }
+
+  // TODO: status of order / shipping / purchasing
 }
 
 export default OrderService

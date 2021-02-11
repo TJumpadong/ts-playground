@@ -31,6 +31,7 @@ describe('CartModel', () => {
     }
     const result = await cartModel.updateOrCreate(newCart)
     expect(result).toBeTruthy()
+    expect(result).toHaveProperty('_id')
   })
 
   test('should update existing cart', async () => {

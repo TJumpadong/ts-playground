@@ -19,9 +19,9 @@ class ProductModel {
     this.model = model<ProductDocument>('Product', productSchema)
   }
 
-  async list (): Promise<IProduct[]> {
-    const products = await this.model.find()
-    return products
+  async list (ids: string[] = []): Promise<IProduct[]> {
+    const filterQuery: object = ids.length ? { _id: { $in: ids } } : {}
+    return await this.model.find(filterQuery)
   }
 
   async create (product: IProduct): Promise<IProduct> {
@@ -33,10 +33,6 @@ class ProductModel {
 
   async get (id: string): Promise<IProduct | null> {
     return await this.model.findById(id)
-  }
-
-  async listByIds (ids: string[]): Promise<IProduct[]> {
-    return await this.model.find({ _id: { $in: ids } }).lean()
   }
 }
 
