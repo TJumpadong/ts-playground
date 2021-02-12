@@ -6,7 +6,6 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "_dev": "tsc -w & nodemon -q -L dist/index.js",
     "dev": "tsnd --respawn src/index.ts",
     "test": "jest --runInBand --detectOpenHandles src",
     "lint": "ts-standard --fix src"

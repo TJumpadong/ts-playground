@@ -11,7 +11,7 @@ import AuthProvider from './ioc/providers/auth'
 import { AppError } from './interfaces/common'
 import { STATUS } from './constants/response'
 
-mongoose.connect('mongodb://localhost:27017/e-shopping', {
+mongoose.connect('mongodb://mongo:27017/e-shopping', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   user: config.dbUser,
